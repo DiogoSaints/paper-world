@@ -17,7 +17,7 @@ const pagination = document.getElementById('pagination');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const currentPageEl = document.getElementById('currentPage');
-const totalPagesEl = document totalPages');
+const totalPagesEl = document.getElementById('totalPages');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
 // Load data from checkpoint
