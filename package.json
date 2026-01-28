@@ -1,0 +1,8 @@
+{
+  "name": "paper-world",
+  "version": "1.0.0",
+  "description": "Paper World - Coleção de Papercrafts",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}

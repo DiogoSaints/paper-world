@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Development files
+scraper.js
+scraper-fast.js
+scraper-ultra.js
+downloader.js
+test-download.js
+server.js
+
+# Data files (don't commit checkpoint to save space)
+results.json
+
+# Build files
+*.log
+.DS_Store
+
+# Environment
+.env
