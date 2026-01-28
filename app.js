@@ -99,12 +99,21 @@ async function downloadCubee(encodedUrl, encodedName) {
 
     console.log(`Downloading: ${name}`);
 
-    // Create and submit POST form in new tab
+    // Create and submit POST form targeting hidden iframe
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `https://www.cubeecraft.com${downloadUrl}`;
-    form.target = '_blank';
+    form.target = 'downloadFrame';
     form.style.display = 'none';
+
+    // Create iframe if needed
+    if (!document.getElementById('downloadFrame')) {
+        const iframe = document.createElement('iframe');
+        iframe.id = 'downloadFrame';
+        iframe.name = 'downloadFrame';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
 
     document.body.appendChild(form);
     form.submit();
