@@ -17,7 +17,7 @@ const pagination = document.getElementById('pagination');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const currentPageEl = document.getElementById('currentPage');
-const totalPagesEl = document.getElementById('totalPages');
+const totalPagesEl = document totalPages');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
 // Load data from checkpoint
@@ -92,24 +92,23 @@ function createCard(cubee) {
     `;
 }
 
-// Download cubee - downloads directly via Netlify Function
+// Download cubee - submits POST form in new tab
 async function downloadCubee(encodedUrl, encodedName) {
     const downloadUrl = decodeURIComponent(encodedUrl);
     const name = decodeURIComponent(encodedName);
 
-    // Use Netlify Function to download the PDF
-    const functionUrl = `/.netlify/functions/download?path=${encodeURIComponent(downloadUrl)}&name=${encodeURIComponent(name)}`;
-
     console.log(`Downloading: ${name}`);
 
-    // Create hidden link and trigger download
-    const a = document.createElement('a');
-    a.href = functionUrl;
-    a.download = `${name}.pdf`;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // Create and submit POST form in new tab
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `https://www.cubeecraft.com${downloadUrl}`;
+    form.target = '_blank';
+    form.style.display = 'none';
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 }
 
 // Apply filters
