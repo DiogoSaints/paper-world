@@ -1,50 +1,68 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-    // Only allow POST requests
-    if (event.httpMethod !== 'GET') {
+    // Enable CORS
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+    };
+
+    // Handle OPTIONS request
+    if (event.httpMethod === 'OPTIONS') {
         return {
-            statusCode: 405,
-            body: 'Method Not Allowed'
+            statusCode: 200,
+            headers,
+            body: ''
         };
     }
 
-    const { path, name } = event.queryStringParameters;
+    // Only allow GET requests
+    if (event.httpMethod !== 'GET') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method Not Allowed' })
+        };
+    }
 
-    if (!path) {
+    const { path, name } = event.queryStringParameters || {};
+
+    if (!path || !name) {
         return {
             statusCode: 400,
-            body: 'Missing download path'
+            headers,
+            body: JSON.stringify({ error: 'Missing path or name parameter' })
         };
     }
 
     try {
-        console.log(`Downloading: ${name}`);
+        console.log(`Downloading: ${name} from ${path}`);
 
         // Make POST request to cubeecraft.com
         const response = await fetch(`https://www.cubeecraft.com${path}`, {
             method: 'POST',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
         });
 
         if (!response.ok) {
-            throw new Error(`Download failed: ${response.statusText}`);
+            throw new Error(`Download failed: ${response.status} ${response.statusText}`);
         }
 
-        // Get the PDF data
+        // Get the PDF data as buffer
         const buffer = await response.buffer();
 
-        // Return as downloadable file
+        // Return PDF with proper headers
         const filename = `${name.replace(/[^a-z0-9]/gi, '_')}.pdf`;
 
         return {
             statusCode: 200,
             headers: {
+                ...headers,
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment; filename="${filename}"`,
-                'Access-Control-Allow-Origin': '*'
+                'Content-Disposition': `attachment; filename="${filename}"`
             },
             body: buffer.toString('base64'),
             isBase64Encoded: true
@@ -53,7 +71,11 @@ exports.handler = async (event) => {
         console.error('Download error:', error.message);
         return {
             statusCode: 500,
-            body: `Download failed: ${error.message}`
+            headers,
+            body: JSON.stringify({
+                error: 'Download failed',
+                message: error.message
+            })
         };
     }
 };
